@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        h1 {
+            font-family: sans-serif;
+            padding-bottom: 10px;
+        }
+        li {
+            list-style-type: none;
+            /* border: 1px solid black; */
+        }
+        ul {
+            padding: 0;
+        }
+        
+        #todo-app {
+            margin: 20px;
+        }
+
+        #input-box, #add-button {
+            
+            padding: 10px;
+        }
+
+        #input-box {
+            border: 2px solid rgb(76, 76, 255);
+            background-color: rgb(200, 253, 255);
+            margin-bottom: 30px;
+            margin-top: 15px;
+            margin-right: 20px;
+        }
+
+        #input-box:hover {
+            box-shadow: 0px 0px 3px 1px rgb(41, 134, 255);
+        }
+
+        #input-box:focus {
+            box-shadow: 0px 0px 10px 1px rgb(41, 134, 255);
+            /* background-color: rgb(128, 255, 223); */
+        }
+
+        #add-button {
+            background-color: #5f84ff;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            width: 50px;
+        }
+
+        #add-button:focus {
+            outline: 0;
+        }
+
+
+        #add-button:hover {
+            background-color: rgb(71, 71, 255);
+        }
+
+        #add-button:active {
+            background-color: rgb(0, 0, 194);
+        }
+        .remove-btn {
+            color: red;
+            margin-left: 10px;
+        }
+
+        progress {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="todo-app">
+        <h1>Todo App</h1>
+        <input id="input-box" type="text" name="task">
+        <button id="add-button" type="button">Add</button>
+        <br>
+        <p>Total progress:</p>
+        <progress id="total-progress" max="100" value="0"></progress>
+        <ul id="todolist">
+        </ul>
+    </div>
+
+    <script>
+        
+        const add_item_to_list = () =>
+        {
+            if (!input_box.value) { return; }
+
+            const list = document.getElementById("todolist");
+            const list_item = document.createElement("li");
+            const task_number = document.getElementsByClassName("todo-item").length + 1;
+            list_item.setAttribute("id", "task-item-" + task_number)
+            list_item.classList.add("todo-item");
+
+            const remove_button = document.createElement("button");
+            remove_button.type = "button";
+            remove_button.appendChild(document.createTextNode("X"));
+            remove_button.classList.add("remove-btn");
+            remove_button.onclick = function() {this.parentNode.remove()};
+            
+            
+            const check_box = document.createElement("input");
+            check_box.type = "checkbox";
+            check_box.setAttribute("class", "task-checkbox");
+            check_box.onclick = update_progress_bar;
+            
+            list_item.appendChild(check_box);
+            list_item.appendChild(document.createTextNode(input_box.value));
+            list_item.appendChild(remove_button);
+            list.appendChild(list_item);
+            
+            update_progress_bar();
+            // clean input box
+            input_box.value = "";
+            // update_progress_bar();
+        }
+        
+        const update_progress_bar = () => {
+            let number_of_tasks = document.getElementsByClassName("todo-item").length;
+            const tasks = document.getElementsByClassName("task-checkbox");
+            let number_of_completed_tasks = 0;
+            for (let i = 0; i < tasks.length; i++) {
+                if (tasks[i].checked) {
+                    number_of_completed_tasks++;
+                }
+            }
+            let progress_bar = document.getElementById("total-progress");
+            progress_bar.value = "0";
+            let total_progress = 0;
+            for (let i = 0; i < number_of_completed_tasks; i++) {
+                total_progress += 100 / number_of_tasks;
+            }
+            console.log(number_of_tasks)
+            console.log(typeof(total_progress))
+            let wow = Math.round(total_progress);
+            console.log("wow:", wow);
+            progress_bar.value = Math.round(total_progress);
+        }
+
+        const input_box = document.getElementById("input-box");        
+        const add_item_button = document.getElementById("add-button");
+        
+        add_item_button.onclick = add_item_to_list;
+        input_box.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                add_item_to_list();
+            }
+        })
+        // add_item_to_list();
+    </script>
+</body>
+</html>

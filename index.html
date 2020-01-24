@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,9 +14,33 @@
             padding-bottom: 10px;
         }
         li {
-            list-style-type: none;
-            /* border: 1px solid black; */
+            font-family: Helvetica;
+            font-size: 16px;
+            font-weight: bold;
+            list-style: none;
+            
+            
+            
         }
+
+        .remove-btn {
+            
+        }
+
+        .task-checkbox {
+            /* margin-left: 10px;
+            margin-right: 10px;
+            width: 30px;
+            height: 30px;
+            margin-left: 15px;
+            margin-right: 10px;
+            background-color: #850000;
+            border-radius: 5px;
+            color: black;
+            background: rgb(213,0,0);
+            background: radial-gradient(circle, rgba(213,0,0,1) 0%, rgba(125,0,0,1) 100%); */
+        }
+
         ul {
             padding: 0;
         }
@@ -73,6 +98,29 @@
 
         progress {
             margin-bottom: 20px;
+            /* background-color: red; */
+        }
+
+
+
+        progress[value]::-webkit-progress-bar {
+            background-color: #eee;
+            border-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+        
+        }
+        progress[value]::-webkit-progress-value {
+            background-image:
+            -webkit-linear-gradient(-45deg, 
+                                    transparent 33%, rgba(0, 0, 0, .1) 33%, 
+                                    rgba(0,0, 0, .1) 66%, transparent 66%),
+            -webkit-linear-gradient(top, 
+                                    rgba(255, 255, 255, .25), 
+                                    rgba(0, 0, 0, .25)),
+            -webkit-linear-gradient(left, #09c, #f44);
+
+            border-radius: 2px; 
+            background-size: 35px 20px, 100% 100%, 100% 100%;
         }
 
     </style>
@@ -91,37 +139,62 @@
 
     <script>
         
+        const remove_item_and_refresh = () => {
+            this.parentNode.remove();
+            update_progress_bar();
+        }
+
         const add_item_to_list = () =>
         {
-            if (!input_box.value) { return; }
-
-            const list = document.getElementById("todolist");
-            const list_item = document.createElement("li");
-            const task_number = document.getElementsByClassName("todo-item").length + 1;
-            list_item.setAttribute("id", "task-item-" + task_number)
-            list_item.classList.add("todo-item");
-
-            const remove_button = document.createElement("button");
-            remove_button.type = "button";
-            remove_button.appendChild(document.createTextNode("X"));
-            remove_button.classList.add("remove-btn");
-            remove_button.onclick = function() {this.parentNode.remove()};
+            if (!get_input()) { return; }
             
-            
-            const check_box = document.createElement("input");
-            check_box.type = "checkbox";
-            check_box.setAttribute("class", "task-checkbox");
-            check_box.onclick = update_progress_bar;
-            
-            list_item.appendChild(check_box);
-            list_item.appendChild(document.createTextNode(input_box.value));
-            list_item.appendChild(remove_button);
-            list.appendChild(list_item);
+            const list = get_list();
+            const new_list_item = make_list_item();
+            list.appendChild(new_list_item);
             
             update_progress_bar();
-            // clean input box
             input_box.value = "";
-            // update_progress_bar();
+        }
+        
+        const get_input = () => input_box.value;
+        
+        const get_list = () => document.getElementById("todolist");
+        
+        const make_list_item = () => {
+            const list_item = make_element("li");
+            list_item.classList.add("todo-item");
+            list_item.setAttribute("id", "todo-item-" + num_of_todo_list_items());
+            const the_remove_item_button = make_a_remove_item_button();
+            const checkbox = make_checkbox();
+            list_item.appendChild(checkbox);
+            list_item.appendChild(document.createTextNode(input_box.value));
+            list_item.appendChild(the_remove_item_button);
+            return list_item;
+        }
+
+        const make_element = (tag_name) => {
+            return document.createElement(tag_name);
+        }
+        
+        const make_a_remove_item_button = () => {
+            const button = make_element("button");
+            button.type = "button";
+            button.appendChild(document.createTextNode("X"));
+            button.classList.add("remove-btn");
+            button.onclick = function() {this.parentNode.remove(); update_progress_bar();};
+            return button;
+        }
+
+        const num_of_todo_list_items = () => {
+            return document.getElementsByClassName("todo-item").length;
+        }
+
+        const make_checkbox = () => {
+            const checkbox = make_element("input");
+            checkbox.type = "checkbox";
+            checkbox.setAttribute("class", "task-checkbox");
+            checkbox.onclick = update_progress_bar;
+            return checkbox;
         }
         
         const update_progress_bar = () => {
@@ -145,12 +218,12 @@
             console.log("wow:", wow);
             progress_bar.value = Math.round(total_progress);
         }
-
+        
         const input_box = document.getElementById("input-box");        
         const add_item_button = document.getElementById("add-button");
         
         add_item_button.onclick = add_item_to_list;
-        input_box.addEventListener("keyup", function(event) {
+        input_box.addEventListener("keyup", (event) => {
             if (event.keyCode === 13) {
                 add_item_to_list();
             }
